@@ -15,7 +15,7 @@ PaperPal is a full-stack web app that allows users to upload PDFs, extract text,
 ## Tech Stack
 - Frontend: React, Next.js, TailwindCSS
 - Backend: Supabase Functions or Node.js + Express
-- Database: Supabase PostgreSQL
+- Database: Supabase 
 - AI: OpenAI GPT-4 for summarization and questions
 - PDF Parsing: pdf-parse
 - Hosting: Vercel (frontend), Supabase (backend/storage)

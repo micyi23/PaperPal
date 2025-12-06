@@ -1,4 +1,5 @@
 import './global.css'
+import '../src/index.css'
 
 export const metadata = {
   title: 'PaperPal',

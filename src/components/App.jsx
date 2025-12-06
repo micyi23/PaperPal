@@ -1,4 +1,4 @@
-import { AppProvider } from './context/AppContext'
+import { AppProvider } from '../context/AppContext'
 import Dashboard from './pages/Dashboard'
 import './index.css'
 
