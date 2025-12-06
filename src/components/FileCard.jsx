@@ -1,0 +1,53 @@
+import { useApp } from '../context/AppContext'
+
+function FileCard({ file }) {
+  const { playFile, deleteFile } = useApp()
+  const isReady = file.status === 'ready'
+
+  return (
+    <div className="file-card">
+      <div className="file-info">
+        <div className="file-icon">📄</div>
+        <div className="file-details">
+          <div className="file-name">{file.name}</div>
+          <div className="file-date">Uploaded: {file.date}</div>
+        </div>
+      </div>
+      
+      <div className="file-actions">
+        {isReady ? (
+          <>
+            <span className="status ready">✅ Ready</span>
+            <button 
+              className="action-btn play" 
+              onClick={() => playFile(file)}
+              title="Play"
+            >
+              ▶
+            </button>
+            <button className="action-btn secondary" title="View Text">
+              👁
+            </button>
+            <button className="action-btn secondary" title="Regenerate">
+              🔄
+            </button>
+          </>
+        ) : (
+          <span className="status processing">
+            <span className="spinner"></span>
+            Processing
+          </span>
+        )}
+        <button 
+          className="action-btn danger" 
+          onClick={() => deleteFile(file.id)}
+          title="Delete"
+        >
+          🗑️
+        </button>
+      </div>
+    </div>
+  )
+}
+
+export default FileCard

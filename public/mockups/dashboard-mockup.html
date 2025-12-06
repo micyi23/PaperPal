@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PaperPal Dashboard</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* ==================== */
+    /* CSS Variables        */
+    /* ==================== */
+    :root {
+      /* Light Mode Colors */
+      --bg-primary: #f3f4f6;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-hover: #eff6ff;
+      --bg-icon: #fef2f2;
+      --bg-input: #ffffff;
+      
+      --text-primary: #1f2937;
+      --text-secondary: #6b7280;
+      --text-muted: #9ca3af;
+      
+      --border-color: #e5e7eb;
+      --accent-color: #3b82f6;
+      --accent-hover: #2563eb;
+      --accent-light: #eff6ff;
+      
+      --status-ready-bg: #d1fae5;
+      --status-ready-text: #059669;
+      --status-processing-bg: #fef3c7;
+      --status-processing-text: #d97706;
+      
+      --icon-color: #ef4444;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Dark Mode Colors */
+    .dark-mode {
+      --bg-primary: #111827;
+      --bg-secondary: #1f2937;
+      --bg-card: #1f2937;
+      --bg-hover: #374151;
+      --bg-icon: #7f1d1d;
+      --bg-input: #374151;
+      
+      --text-primary: #f9fafb;
+      --text-secondary: #d1d5db;
+      --text-muted: #9ca3af;
+      
+      --border-color: #374151;
+      --accent-color: #3b82f6;
+      --accent-hover: #60a5fa;
+      --accent-light: #1e3a5f;
+      
+      --status-ready-bg: #064e3b;
+      --status-ready-text: #6ee7b7;
+      --status-processing-bg: #78350f;
+      --status-processing-text: #fcd34d;
+      
+      --icon-color: #f87171;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    /* ==================== */
+    /* Base Styles          */
+    /* ==================== */
+    body {
+      display: flex;
+      height: 100vh;
+      background: var(--bg-primary);
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    /* ==================== */
+    /* Animations           */
+    /* ==================== */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.5;
+      }
+    }
+
+    @keyframes bounce {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.1);
+      }
+    }
+
+    @keyframes spin {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes progressWave {
+      0% {
+        background-position: 0% 50%;
+      }
+      100% {
+        background-position: 100% 50%;
+      }
+    }
+
+    /* ==================== */
+    /* Sidebar              */
+    /* ==================== */
+    .sidebar {
+      width: 240px;
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border-color);
+      padding: 20px;
+      animation: slideIn 0.5s ease;
+      transition: background 0.3s ease, border-color 0.3s ease;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 40px;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--accent-color);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
+      transition: transform 0.3s ease, background 0.3s ease;
+    }
+
+    .logo-icon:hover {
+      transform: rotate(10deg) scale(1.1);
+    }
+
+    .logo-text {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+      transition: color 0.3s ease;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      margin-bottom: 4px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nav-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 0;
+      background: var(--accent-color);
+      transition: width 0.3s ease;
+      border-radius: 8px;
+      z-index: -1;
+      opacity: 0.1;
+    }
+
+    .nav-item:hover::before,
+    .nav-item.active::before {
+      width: 100%;
+    }
+
+    .nav-item:hover,
+    .nav-item.active {
+      color: var(--accent-color);
+      transform: translateX(5px);
+    }
+
+    .nav-icon {
+      font-size: 18px;
+      transition: transform 0.3s ease;
+    }
+
+    .nav-item:hover .nav-icon {
+      transform: scale(1.2);
+    }
+
+    /* ==================== */
+    /* Main Content         */
+    /* ==================== */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      transition: background 0.3s ease;
+    }
+
+    /* ==================== */
+    /* Top Bar              */
+    /* ==================== */
+    .topbar {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      animation: fadeIn 0.5s ease;
+      transition: background 0.3s ease, border-color 0.3s ease;
+    }
+
+    .search {
+      padding: 10px 16px;
+      width: 320px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 14px;
+      background: var(--bg-input);
+      color: var(--text-primary);
+      transition: all 0.3s ease;
+    }
+
+    .search:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+      transform: scale(1.02);
+    }
+
+    .search::placeholder {
+      color: var(--text-muted);
+    }
+
+    .topbar-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .upload-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent-color);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .upload-btn::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .upload-btn:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+    }
+
+    .upload-btn:hover::after {
+      width: 300px;
+      height: 300px;
+    }
+
+    .upload-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Theme Toggle */
+    .theme-toggle {
+      width: 44px;
+      height: 44px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .theme-toggle:hover {
+      transform: rotate(180deg) scale(1.1);
+      background: var(--accent-light);
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .avatar:hover {
+      transform: scale(1.1);
+      border-color: var(--accent-color);
+    }
+
+    /* ==================== */
+    /* Content Area         */
+    /* ==================== */
+    .content {
+      flex: 1;
+      padding: 24px;
+      overflow-y: auto;
+      animation: fadeIn 0.6s ease;
+    }
+
+    .content h1 {
+      font-size: 24px;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+      transition: color 0.3s ease;
+    }
+
+    .content > p {
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+      transition: color 0.3s ease;
+    }
+
+    /* ==================== */
+    /* File Cards           */
+    /* ==================== */
+    .file-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      transition: all 0.3s ease;
+      animation: fadeIn 0.5s ease backwards;
+    }
+
+    .file-card:nth-child(1) { animation-delay: 0.1s; }
+    .file-card:nth-child(2) { animation-delay: 0.2s; }
+    .file-card:nth-child(3) { animation-delay: 0.3s; }
+    .file-card:nth-child(4) { animation-delay: 0.4s; }
+
+    .file-card:hover {
+      box-shadow: var(--shadow);
+      transform: translateY(-3px) scale(1.01);
+      border-color: var(--accent-color);
+    }
+
+    .file-info {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .file-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--bg-icon);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--icon-color);
+      font-size: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .file-card:hover .file-icon {
+      transform: rotate(-5deg) scale(1.1);
+    }
+
+    .file-name {
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+      transition: color 0.3s ease;
+    }
+
+    .file-date {
+      font-size: 13px;
+      color: var(--text-muted);
+      transition: color 0.3s ease;
+    }
+
+    .file-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .status {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .status.ready {
+      background: var(--status-ready-bg);
+      color: var(--status-ready-text);
+    }
+
+    .status.processing {
+      background: var(--status-processing-bg);
+      color: var(--status-processing-text);
+      animation: pulse 1.5s infinite;
+    }
+
+    .action-btn {
+      width: 36px;
+      height: 36px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      font-size: 14px;
+    }
+
+    .action-btn.play {
+      background: var(--accent-color);
+      color: white;
+    }
+
+    .action-btn.play:hover {
+      background: var(--accent-hover);
+      transform: scale(1.15);
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+    }
+
+    .action-btn.secondary {
+      background: var(--bg-input);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-color);
+    }
+
+    .action-btn.secondary:hover {
+      background: var(--bg-hover);
+      transform: scale(1.1);
+    }
+
+    /* ==================== */
+    /* Audio Player         */
+    /* ==================== */
+    .audio-player {
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border-color);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      animation: fadeIn 0.7s ease;
+      transition: all 0.3s ease;
+    }
+
+    .now-playing {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 200px;
+    }
+
+    .now-playing-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--bg-icon);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--icon-color);
+      font-weight: 700;
+      font-size: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .audio-player:hover .now-playing-icon {
+      animation: bounce 0.6s ease;
+    }
+
+    .now-playing-title {
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 14px;
+      transition: color 0.3s ease;
+    }
+
+    .now-playing-chapter {
+      font-size: 12px;
+      color: var(--text-muted);
+      transition: color 0.3s ease;
+    }
+
+    .player-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .control-btn {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 18px;
+      padding: 8px;
+      transition: all 0.3s ease;
+      border-radius: 50%;
+    }
+
+    .control-btn:hover {
+      color: var(--text-primary);
+      background: var(--bg-hover);
+      transform: scale(1.2);
+    }
+
+    .play-btn {
+      width: 52px;
+      height: 52px;
+      background: var(--accent-color);
+      border: none;
+      border-radius: 50%;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .play-btn::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: var(--accent-color);
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+
+    .play-btn:hover {
+      background: var(--accent-hover);
+      transform: scale(1.1);
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+    }
+
+    .play-btn:hover::before {
+      opacity: 0.3;
+      animation: pulse 1s infinite;
+      transform: scale(1.3);
+    }
+
+    .play-btn.playing {
+      animation: pulse 1s infinite;
+    }
+
+    .progress-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      max-width: 500px;
+    }
+
+    .time {
+      font-size: 12px;
+      color: var(--text-muted);
+      min-width: 40px;
+      transition: color 0.3s ease;
+    }
+
+    .progress-bar {
+      flex: 1;
+      height: 6px;
+      background: var(--border-color);
+      border-radius: 3px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .progress-bar:hover {
+      height: 10px;
+    }
+
+    .progress-fill {
+      width: 35%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-color), var(--accent-hover));
+      background-size: 200% 100%;
+      border-radius: 3px;
+      transition: width 0.3s ease;
+      animation: progressWave 2s linear infinite;
+    }
+
+    .volume-section {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 150px;
+    }
+
+    .volume-icon {
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .volume-icon:hover {
+      color: var(--accent-color);
+      transform: scale(1.2);
+    }
+
+    .volume-bar {
+      flex: 1;
+      height: 6px;
+      background: var(--border-color);
+      border-radius: 3px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .volume-bar:hover {
+      height: 10px;
+    }
+
+    .volume-fill {
+      width: 70%;
+      height: 100%;
+      background: var(--accent-color);
+      border-radius: 3px;
+      transition: all 0.3s ease;
+    }
+
+    /* ==================== */
+    /* Scrollbar Styling    */
+    /* ==================== */
+    .content::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .content::-webkit-scrollbar-track {
+      background: var(--bg-primary);
+    }
+
+    .content::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 4px;
+    }
+
+    .content::-webkit-scrollbar-thumb:hover {
+      background: var(--text-muted);
+    }
+
+    /* ==================== */
+    /* Tooltip              */
+    /* ==================== */
+    .tooltip {
+      position: relative;
+    }
+
+    .tooltip::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 120%;
+      left: 50%;
+      transform: translateX(-50%) scale(0.8);
+      background: var(--text-primary);
+      color: var(--bg-secondary);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s ease;
+    }
+
+    .tooltip:hover::after {
+      opacity: 1;
+      transform: translateX(-50%) scale(1);
+    }
+
+    /* ==================== */
+    /* Loading Spinner      */
+    /* ==================== */
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid var(--status-processing-text);
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-icon">📚</div>
+      <span class="logo-text">PaperPal</span>
+    </div>
+    <nav>
+      <div class="nav-item active">
+        <span class="nav-icon">📖</span>
+        <span>Library</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">🕐</span>
+        <span>Recently Played</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">❤️</span>
+        <span>Favorites</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">⚙️</span>
+        <span>Settings</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">❓</span>
+        <span>Help</span>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main">
+
+    <!-- Top Bar -->
+    <header class="topbar">
+      <input type="text" class="search" placeholder="🔍 Search your library...">
+      <div class="topbar-actions">
+        <button class="upload-btn">
+          <span>📤</span>
+          <span>Upload PDF</span>
+        </button>
+        <button class="theme-toggle tooltip" data-tooltip="Toggle Dark Mode" onclick="toggleDarkMode()">
+          <span id="theme-icon">🌙</span>
+        </button>
+        <div class="avatar tooltip" data-tooltip="Profile">👤</div>
+      </div>
+    </header>
+
+    <!-- Content Area -->
+    <section class="content">
+      <h1>Your Library</h1>
+      <p>Uploaded PDFs ready to read aloud</p>
+
+      <!-- File Card 1 -->
+      <div class="file-card">
+        <div class="file-info">
+          <div class="file-icon">📄</div>
+          <div>
+            <div class="file-name">The Great Ebook.pdf</div>
+            <div class="file-date">Uploaded: Jan 3, 2025</div>
+          </div>
+        </div>
+        <div class="file-actions">
+          <span class="status ready">✅ Ready</span>
+          <button class="action-btn play tooltip" data-tooltip="Play">▶</button>
+          <button class="action-btn secondary tooltip" data-tooltip="View Text">👁</button>
+          <button class="action-btn secondary tooltip" data-tooltip="Regenerate">🔄</button>
+        </div>
+      </div>
+
+      <!-- File Card 2 -->
+      <div class="file-card">
+        <div class="file-info">
+          <div class="file-icon">📄</div>
+          <div>
+            <div class="file-name">Chemistry Basics.pdf</div>
+            <div class="file-date">Uploaded: Jan 2, 2025</div>
+          </div>
+        </div>
+        <div class="file-actions">
+          <span class="status processing">
+            <span class="spinner"></span>
+            Processing
+          </span>
+        </div>
+      </div>
+
+      <!-- File Card 3 -->
+      <div class="file-card">
+        <div class="file-info">
+          <div class="file-icon">📄</div>
+          <div>
+            <div class="file-name">History Notes.pdf</div>
+            <div class="file-date">Uploaded: Dec 28, 2024</div>
+          </div>
+        </div>
+        <div class="file-actions">
+          <span class="status ready">✅ Ready</span>
+          <button class="action-btn play tooltip" data-tooltip="Play">▶</button>
+          <button class=" 
