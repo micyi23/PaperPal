@@ -1,7 +1,7 @@
 'use client'
 
-import { AppProvider } from '../context/AppContext'
-import Dashboard from '../components/Dashboard'
+import { AppProvider } from '../src/components/AppContext'
+import Dashboard from '../src/components/Dashboard'
 
 export default function Home() {
   return (
