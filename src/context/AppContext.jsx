@@ -17,7 +17,7 @@ export function AppProvider({ children }) {
     setDarkMode(!darkMode)
   }
 
-  const addFile = (file) => {
+  const addFile = async (file) => {
     const newFile = {
       id: Date.now(),
       name: file.name,
@@ -28,17 +28,43 @@ export function AppProvider({ children }) {
         year: 'numeric'
       }),
       status: 'processing',
-      file: file
+      file: file,
+      text: null
     }
     setFiles([newFile, ...files])
     
-    setTimeout(() => {
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      })
+
+      const data = await res.json()
+
+      if (data.text) {
+        setFiles(prev => 
+          prev.map(f => 
+            f.id === newFile.id 
+              ? { ...f, status: 'ready', text: data.text, pages: data.pages } 
+              : f
+          )
+        )
+      } else {
+        throw new Error(data.error || 'Failed to process PDF')
+      }
+    } catch (error) {
+      console.error('PDF processing error:', error)
       setFiles(prev => 
         prev.map(f => 
-          f.id === newFile.id ? { ...f, status: 'ready' } : f
+          f.id === newFile.id 
+            ? { ...f, status: 'error', error: error.message } 
+            : f
         )
       )
-    }, 3000)
+    }
   }
 
   const deleteFile = (id) => {

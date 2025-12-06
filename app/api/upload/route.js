@@ -1,5 +1,6 @@
-import pdf from "pdf-parse";
 import { NextResponse } from "next/server";
+
+export const runtime = 'nodejs';
 
 export async function POST(req) {
   try {
@@ -10,6 +11,9 @@ export async function POST(req) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
 
+    // Dynamic import to ensure pdf-parse only loads on server
+    const pdf = (await import("pdf-parse")).default;
+    
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
@@ -20,9 +24,9 @@ export async function POST(req) {
       pages: data.numpages,
     });
   } catch (error) {
-    console.error(error);
+    console.error("PDF parsing error:", error);
     return NextResponse.json(
-      { error: "Failed to process PDF" },
+      { error: "Failed to process PDF: " + error.message },
       { status: 500 }
     );
   }
