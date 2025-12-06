@@ -1,3 +1,12 @@
+'use client'
+
+import { AppProvider } from '../context/AppContext'
+import Dashboard from '../components/Dashboard'
+
 export default function Home() {
-  return <h1>PaperPal is Live 🚀</h1>;
+  return (
+    <AppProvider>
+      <Dashboard />
+    </AppProvider>
+  )
 }
