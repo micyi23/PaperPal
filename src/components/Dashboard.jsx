@@ -1,7 +1,7 @@
-import Sidebar from '../components/Sidebar'
-import TopBar from '../components/TopBar'
-import FileList from '../components/FileList'
-import AudioPlayer from '../components/AudioPlayer'
+import Sidebar from './Sidebar'
+import TopBar from './TopBar'
+import FileList from './FileList'
+import AudioPlayer from './AudioPlayer'
 import { useApp } from '../context/AppContext'
 
 function Dashboard() {
