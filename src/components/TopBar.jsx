@@ -3,14 +3,14 @@ import ThemeToggle from './ThemeToggle'
 
 function TopBar() {
   return (
-    <header className="topbar">
+    <header className="top-bar">
       <input 
         type="text" 
         className="search" 
         placeholder="🔍 Search your library..." 
       />
       
-      <div className="topbar-actions">
+      <div className="top-bar-actions">
         <UploadButton />
         <ThemeToggle />
         <div className="avatar">👤</div>
