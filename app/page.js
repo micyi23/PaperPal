@@ -1,13 +1,31 @@
-'use client'
+const handleUpload = async () => {
+  if (!file) return alert("Please upload a PDF");
 
-import { AppProvider } from '../src/context/AppContext'
-import Dashboard from '../src/components/Dashboard'
+  const formData = new FormData();
+  formData.append("file", file);
 
-export default function Home() {
-  return (
-    <AppProvider>
-      <Dashboard />
-    </AppProvider>
-  )
-}
+  setLoading(true);
+
+  const res = await fetch("/api/upload", {
+    method: "POST",
+    body: formData,
+  });
+
+  const data = await res.json();
+
+  if (data.error) {
+    alert("PDF failed to process");
+  } else {
+    setText(data.text);
+  }
+
+  setLoading(false);
+};
+
+const speakText = () => {
+  if (!text) return alert("Nothing to read");
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.rate = 1;
+  speechSynthesis.speak(utterance);
+};
 
