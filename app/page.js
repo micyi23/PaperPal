@@ -1,3 +1,4 @@
+"use client";
 const handleUpload = async () => {
   if (!file) return alert("Please upload a PDF");
 
