@@ -1,32 +1,37 @@
 "use client";
-const handleUpload = async () => {
-  if (!file) return alert("Please upload a PDF");
 
-  const formData = new FormData();
-  formData.append("file", file);
+import { useState } from "react";
 
-  setLoading(true);
+export default function Page() {
+  const [audioUrl, setAudioUrl] = useState(null);
 
-  const res = await fetch("/api/upload", {
-    method: "POST",
-    body: formData,
-  });
+  async function handleUpload(e) {
+    const file = e.target.files[0];
+    const form = new FormData();
+    form.append("file", file);
 
-  const data = await res.json();
+    const res = await fetch("/api/convert", {
+      method: "POST",
+      body: form,
+    });
 
-  if (data.error) {
-    alert("PDF failed to process");
-  } else {
-    setText(data.text);
+    const data = await res.json();
+    setAudioUrl(data.audioUrl);
   }
 
-  setLoading(false);
-};
+  return (
+    <main className="p-8">
+      <input
+        type="file"
+        accept="application/pdf"
+        onChange={handleUpload}
+        className="border p-2 rounded"
+      />
+      {audioUrl && (
+        <audio controls src={audioUrl} className="mt-4 w-full" />
+      )}
+    </main>
+  );
+}
 
-const speakText = () => {
-  if (!text) return alert("Nothing to read");
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.rate = 1;
-  speechSynthesis.speak(utterance);
-};
 
