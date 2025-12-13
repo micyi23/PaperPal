@@ -1,3 +1,5 @@
+"use client";
+
 import Sidebar from './Sidebar'
 import TopBar from './TopBar'
 import FileList from './FileList'

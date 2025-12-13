@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "epub2": "^3.0.2",
     "lucide-react": "^0.556.0",
     "next": "14.0.0",
     "pdf-parse": "^2.4.5",

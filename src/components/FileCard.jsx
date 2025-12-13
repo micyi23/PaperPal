@@ -3,6 +3,8 @@ import { useApp } from '../context/AppContext'
 function FileCard({ file }) {
   const { playFile, deleteFile } = useApp()
   const isReady = file.status === 'ready'
+  const isProcessing = file.status === 'processing' || file.status === 'uploading'
+  const isError = file.status === 'error'
 
   return (
     <div className="file-card">
@@ -32,10 +34,14 @@ function FileCard({ file }) {
               🔄
             </button>
           </>
+        ) : isError ? (
+          <span className="status error" title={file.error}>
+            ❌ Error: {file.statusMessage || 'Failed'}
+          </span>
         ) : (
-          <span className="status processing">
+          <span className="status processing" title={file.statusMessage}>
             <span className="spinner"></span>
-            Processing
+            {file.statusMessage || 'Processing...'}
           </span>
         )}
         <button 
