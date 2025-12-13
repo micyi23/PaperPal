@@ -27,40 +27,73 @@ export function AppProvider({ children }) {
         day: 'numeric',
         year: 'numeric'
       }),
-      status: 'processing',
+      status: 'uploading',
+      statusMessage: 'Uploading file...',
       file: file,
-      text: null
+      audioUrl: null
     }
     setFiles([newFile, ...files])
     
     try {
+      // Update status: Extracting text
+      setFiles(prev => 
+        prev.map(f => 
+          f.id === newFile.id 
+            ? { ...f, status: 'processing', statusMessage: 'Extracting text from file...' } 
+            : f
+        )
+      )
+
       const formData = new FormData()
       formData.append('file', file)
+
+      // Update status: Generating audio
+      setFiles(prev => 
+        prev.map(f => 
+          f.id === newFile.id 
+            ? { ...f, statusMessage: 'Generating audio...' } 
+            : f
+        )
+      )
 
       const res = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
       })
 
-      const data = await res.json()
+      // Check if response is JSON
+      const contentType = res.headers.get('content-type')
+      let data
+      
+      if (contentType && contentType.includes('application/json')) {
+        data = await res.json()
+      } else {
+        const text = await res.text()
+        console.error('Non-JSON response:', text)
+        throw new Error('Server returned invalid response')
+      }
 
-      if (data.text) {
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to process file')
+      }
+
+      if (data.audioUrl) {
         setFiles(prev => 
           prev.map(f => 
             f.id === newFile.id 
-              ? { ...f, status: 'ready', text: data.text, pages: data.pages } 
+              ? { ...f, status: 'ready', statusMessage: 'Ready to play', audioUrl: data.audioUrl } 
               : f
           )
         )
       } else {
-        throw new Error(data.error || 'Failed to process PDF')
+        throw new Error(data.error || 'Failed to process file')
       }
     } catch (error) {
-      console.error('PDF processing error:', error)
+      console.error('File processing error:', error)
       setFiles(prev => 
         prev.map(f => 
           f.id === newFile.id 
-            ? { ...f, status: 'error', error: error.message } 
+            ? { ...f, status: 'error', statusMessage: error.message || 'Processing failed', error: error.message } 
             : f
         )
       )
