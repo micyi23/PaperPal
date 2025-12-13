@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import pdf from "pdf-parse";
 
-export const runtime = "edge"; // Vercel optimal
+export const runtime = "nodejs"; // Vercel optimal
 
 export async function POST(req) {
   try {
